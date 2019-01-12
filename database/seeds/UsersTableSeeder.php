@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\User;
+use Faker\Factory as Faker;
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,19 +13,6 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-    	Permission::create(['name' => 'add users']);
-    	Permission::create(['name' => 'edit users']);
-    	Permission::create(['name' => 'delete users']);
-    	Permission::create(['name' => 'detail users']);
-    	Permission::create(['name' => 'list users']);
-
-    	$roleAdmin = Role::create([
-        	'name' => 'admin'
-        ])->givePermissionTo(Permission::all());
-
-        $roleUser = Role::create([
-        	'name' => 'user'
-        ])->givePermissionTo('edit users','detail users');
 
         User::create([
             'name' => "User",
@@ -37,13 +23,23 @@ class UsersTableSeeder extends Seeder
         ])->assignRole('user');
 
         User::create([
-            'name' => "Admmin",
+            'name' => "Admin",
             'email' => 'admin@gmail.com',
             'phone' => '081234567891',
             'address' => '2',
             'password' => bcrypt('password'),
         ])->assignRole('admin');
 
-        
+      	$faker = Faker::create();
+
+      	foreach(range(1, 40) as $index){
+      		User::create([
+	            'name' => $faker->name,
+	            'email' => $faker->email,
+	            'phone' => $faker->e164PhoneNumber,
+	            'address' => $faker->address,
+	            'password' => bcrypt('password'),
+	        ])->assignRole('user');
+      	}  
     }
 }
