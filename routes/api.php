@@ -20,7 +20,7 @@ Route::group(['prefix' => 'v1'], function(){
 	});
 
 	Route::group(['middleware' => ['auth:api']], function(){
-		Route::resource('users','API\V1\UserController', ['only'	=> ['index','store','delete']])->middleware(['role:admin']);
+		Route::resource('users','API\V1\UserController', ['only'	=> ['index','store','destroy']])->middleware(['role:admin']);
 		Route::get('users/{id}','API\V1\UserController@show')->middleware('role:admin|user');
 		Route::post('users/{id}','API\V1\UserController@update')->middleware('role:admin|user');
 	});

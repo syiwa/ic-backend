@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -53,7 +54,13 @@ class Handler extends ExceptionHandler
                 "message" => "Unauthorized."
             ],403);
         }
-        
+
+        if ($exception instanceof ModelNotFoundException) {
+            return jsonResponse([
+                "message" => "Not found."
+            ],404);
+        }
+
         return parent::render($request, $exception);
     }
 

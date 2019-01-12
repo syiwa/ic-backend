@@ -125,4 +125,22 @@ class UserController extends Controller
 
         return jsonResponse($user->toArray());
     }
+
+    /**
+     * Delete User
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
+    public function destroy($id)
+    {
+        if(Auth::user()->id == $id) {
+            return jsonResponse([
+                "message" => "Unauthorized."
+            ],403);
+        }
+
+        return jsonResponse([
+            'status' => \App\User::destroy($id)
+        ]);
+    }
 }
