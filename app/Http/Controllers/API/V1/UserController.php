@@ -65,7 +65,9 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return \App\User::paginate()->appends($request->all());
+        $users = \App\User::paginate()->appends($request->all());
+
+        return jsonResponse($users->toArray());
     }
 
     /**
