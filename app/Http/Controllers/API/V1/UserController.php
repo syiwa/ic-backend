@@ -14,10 +14,12 @@ class UserController extends Controller
      * @param  Request $request [description]
      * @return JSON             [description]
      */
-    public function login(Request $request)
+    public function login(\App\Http\Requests\LoginRequest $request)
     {
     	if(Auth::attempt(request(['email','password']))){
     		$user = Auth::user();
+
+            $user->load('roles');
 
     		$tokenResult = $user->createToken('ICSG');
 
@@ -31,7 +33,8 @@ class UserController extends Controller
 
     		return jsonResponse([
     			'access_token' => $tokenResult->accessToken,
-    			'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
+    			'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+                'user' => $user->toArray()
     		]);
     	}else{
             return jsonResponse([
