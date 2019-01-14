@@ -27,6 +27,7 @@ Route::group(['prefix' => 'v1'], function(){
 
 			return jsonResponse($user->toArray());
 		});
+		Route::post('users/password','API\V1\UserController@changePassword');
 		Route::resource('users','API\V1\UserController', ['only'	=> ['index','store','destroy']])->middleware(['role:admin']);
 		Route::get('users/{id}','API\V1\UserController@show');
 		Route::post('users/{id}','API\V1\UserController@update');

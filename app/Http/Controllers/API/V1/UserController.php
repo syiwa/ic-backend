@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Auth;
+use Hash;
 
 class UserController extends Controller
 {
@@ -38,7 +39,7 @@ class UserController extends Controller
     		]);
     	}else{
             return jsonResponse([
-                'message' => 'wrongLogin'
+                'message' => 'The email and password are didn\'t match in out database.'
             ],422);
         }
     }
@@ -84,7 +85,7 @@ class UserController extends Controller
             ],403);
         }
 
-        return \App\User::find($id);
+        return jsonResponse(\App\User::find($id)->toArray());
     }
 
     /**
@@ -110,7 +111,9 @@ class UserController extends Controller
      */
     public function update(\App\Http\Requests\UserRequest $request, $id)
     {
-        $data = $request->only(['name','email','phone','address']);
+        $data = array_filter($request->only(['name','email','phone','address']),function($value){
+            return $value != null && $value != "";
+        });
 
         if(Auth::user()->hasRole('user')){
             if(Auth::user()->id != $id){
@@ -146,6 +149,28 @@ class UserController extends Controller
 
         return jsonResponse([
             'status' => \App\User::destroy($id)
+        ]);
+    }
+
+    /**
+     * Change password
+     * @param  \App\Http\Requests\PasswordRequest $request [description]
+     * @return [type]                                      [description]
+     */
+    public function changePassword(\App\Http\Requests\PasswordRequest $request)
+    {
+        $user = Auth::user();
+
+        if(!Hash::check($request->old_password, $user->password)){
+            return jsonResponse([
+                "message" => "Wrong Password."
+            ],422);
+        }
+
+        $user->password = bcrypt($request->new_password);
+
+        return jsonResponse([
+            "status" => $user->save()
         ]);
     }
 }
